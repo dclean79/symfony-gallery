@@ -1,3 +1,7 @@
 body {
-    background-color: skyblue;
+    background-color: #1e758d;
+}
+
+.navbar.navbar-expand-lg {
+    background-color: #ffc93c;
 }
