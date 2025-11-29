@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block body %}
+    <h1 class="display-4 mb-4" style="color: #155263;">{{ page_title }}</h1>
+
+    <div class="row">
+        <div class="col-md-8">
+            <p class="lead">
+                Welcome to our simple **Symfony Gallery application**, built as an educational project.
+                Our goal is to demonstrate key techniques used in modern Symfony applications,
+                specifically: **modular Twig**, **Dependency Injection (DI)**, and **secure file handling**.
+            </p>
+
+            <h2 class="mt-5" style="color: #1e758d;">Our Architecture</h2>
+            <p>
+                The application relies on **Bootstrap 5** for full responsiveness and utilizes the **Controller-View** pattern (MVC-like).
+                All uploaded files are securely stored outside of Git control, adhering to best practices.
+            </p>
+            <ul class="list-unstyled">
+                <li><i class="bi bi-check-circle-fill text-success" style="color: #ffbb09;"></i> **Controllers:** Use of `#[Route]` attributes and service injection (e.g., `SluggerInterface`).</li>
+                <li><i class="bi bi-check-circle-fill text-success" style="color: #ffbb09;"></i> **Views:** Architecture with inheritance (`base.html.twig`) and composition (`_navbar.html.twig`).</li>
+                <li><i class="bi bi-check-circle-fill text-success" style="color: #ffbb09;"></i> **Forms:** Handling single data (gallery name) and file collections (pictures) with validation.</li>
+            </ul>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0" style="background-color: #ffd76f;">
+                <div class="card-body">
+                    <h5 class="card-title" style="color: #0c2f39;">Symfony Core</h5>
+                    <p class="card-text small">Version: 6.x / 7.x</p>
+                    <h5 class="card-title" style="color: #0c2f39;">Front-end</h5>
+                    <p class="card-text small">Framework: Bootstrap 5</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

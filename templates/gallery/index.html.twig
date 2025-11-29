@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block body %}
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>{{ page_title }}</h1>
+        <a href="{{ path('app_gallery_new') }}" class="btn btn-warning" style="background-color: #ffc93c; border-color: #ffc93c; color: #0c2f39;">
+            <i class="bi bi-folder-plus"></i> Add Gallery
+        </a>
+    </div>
+    
+    <h2>Existing Galleries:</h2>
+    
+    {% if galleries is empty %}
+        <div class="alert alert-info">No galleries found yet. Start by clicking "Add Gallery"!</div>
+    {% else %}
+        <div class="list-group">
+            {% for galleryData in galleries %}
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    {% set slug = galleryData.slug %}
+                    {% set thumbnail = galleryData.thumbnail %}
+
+                    <strong>{{ slug |capitalize|replace({'-': ' '}) }}</strong>
+
+                    {% if thumbnail %}
+                        <img src="{{ '/uploads/galleries/' ~ slug ~ '/' ~ thumbnail }}"
+                             alt="{{ slug }} Thumbnail"
+                             style="width: 50px; height: 50px; object-fit: cover; margin-right: 15px; border-radius: 5px;">
+                    {% endif %}
+
+                    <a href="{{ path('app_gallery_upload', {'slug': slug }) }}" class="btn btn-sm btn-info" 
+                       style="background-color: #1e758d; border-color: #1e758d; color: white;">
+                        <i class="bi bi-image"></i> Add Pictures
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+{% endblock %}

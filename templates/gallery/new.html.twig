@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block body %}
+    <h1>{{ page_title }}</h1>
+
+    {{ form_start(form) }}
+        <div class="mb-3">
+            {{ form_label(form.name) }}
+            {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.name) }}
+        </div>
+
+        <button type="submit" class="btn btn-success" style="background-color: #ffbb09; border-color: #ffbb09; color: #0c2f39;">Create Gallery</button>
+    {{ form_end(form) }}
+{% endblock %}

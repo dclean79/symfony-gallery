@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block body %}
+    <h1 class="display-4 mb-4" style="color: #155263;">{{ page_title }}</h1>
+    
+    <p class="lead">
+        Prześlij zdjęcia do galerii: **{{ slug|capitalize|replace({'-': ' '}) }}**.
+    </p>
+
+    {# Wyświetlanie komunikatów Flash (sukces/błąd) #}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }}" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="card shadow-sm border-0" style="border-left: 5px solid #ffc93c !important;">
+        <div class="card-body">
+            <h5 class="card-title" style="color: #0c2f39;">Dodaj Zdjęcia</h5>
+
+            {# KLUCZOWY ELEMENT: enctype="multipart/form-data" do obsługi plików #}
+            {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+
+            <div class="mb-3">
+                    {{ form_label(form.pictures, null, {'label_attr': {'class': 'form-label'}}) }}
+                    
+                    {# Widget dla pola pliku. Używamy 'form-control' z Bootstrapa. #}
+                    {{ form_widget(form.pictures, {
+                        'attr': {
+                            'class': 'form-control',
+                            'accept': 'image/*' 
+                        }
+                    }) }} {# Koniec bloku form_widget #}
+                    
+                    {# KOMENTARZ PRZENIESIONY POZA BLOK WIDGETU #}
+                    <small class="form-text text-muted">
+                        Sugerowanie przeglądarce, że oczekujemy obrazów.
+                    </small>
+                    
+                    {# Wyświetlanie błędów walidacji dla pola pliku #}
+                    {{ form_errors(form.pictures) }}
+
+                    <small id="picturesHelp" class="form-text text-muted mt-2">
+                        Możesz wybrać do **20 plików** jednocześnie. Akceptowane formaty: JPG, PNG, GIF, BMP.
+                    </small>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg" 
+                        style="background-color: #ffbb09; border-color: #ffbb09; color: #0c2f39;">
+                    <i class="bi bi-cloud-upload me-2"></i> Upload Pictures
+                </button>
+            
+            {{ form_end(form) }}
+        </div>
+    </div>
+
+    <div class="mt-5">
+        <a href="{{ path('app_gallery_index') }}" class="btn btn-link" style="color: #155263;">
+            &larr; Wróć do listy galerii
+        </a>
+    </div>
+
+{% endblock %}

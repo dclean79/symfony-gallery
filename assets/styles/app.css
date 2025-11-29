@@ -1,7 +1,36 @@
-body {
-    background-color: #1e758d;
+:root {
+    --color-primary: #ffc93c;   /* Żółty/złoty - Akcent */
+    --color-secondary: #155263; /* Ciemny niebieski - Tło Navbar */
+    --color-accent-light: #ffd76f; /* Jasny akcent */
+    --color-accent-dark: #ffbb09; /* Ciemny akcent */
+    --color-info: #1e758d;      /* Niebieski - Przyciski info */
+    --color-text-dark: #0c2f39; /* Prawie czarny/ciemny granat - Tekst */
 }
 
-.navbar.navbar-expand-lg {
-    background-color: #ffc93c;
+.navbar {
+    background-color: var(--color-secondary) !important;
+}
+
+.navbar-brand, .navbar-nav .nav-link {
+    color: var(--color-accent-light) !important;
+}
+
+.navbar-nav .nav-link:hover, .navbar-nav .nav-link.active {
+    color: var(--color-primary) !important;
+}
+
+.btn-warning {
+    background-color: var(--color-primary);
+    border-color: var(--color-accent-dark);
+    color: var(--color-text-dark);
+}
+
+.btn-info {
+    background-color: var(--color-info);
+    border-color: var(--color-info);
+}
+
+main {
+    padding-top: 20px;
+    padding-bottom: 50px;
 }
