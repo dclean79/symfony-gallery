@@ -34,9 +34,11 @@ class GalleryController extends AbstractController
         }
 
         $result = [];
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp'];
+
         foreach ($galleries as $slug) {
             $galleryPath = $baseDir . '/' . $slug;
-            $thumbnailFilename = null;
+            $galleryPictures = [];
 
             $filesInGallery = scandir($galleryPath);
 
@@ -48,21 +50,19 @@ class GalleryController extends AbstractController
                 }
 
                 $extension = pathinfo($file, PATHINFO_EXTENSION);
-                $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp'];
-
+                
                 if (in_array(strtolower($extension), $allowedExtensions)) {
-                    $thumbnailFilename = $file;
-                    break;
+                    $galleryPictures[] = [
+                        'filename' => $file,
+                    ];
                 }
             }
             
             $result[] = [
                 'slug' => $slug,
-                'thumbnail' => $thumbnailFilename
+                'pictures' => $galleryPictures,
             ];
         }
-
-        // dd($result);
         
         return $this->render('gallery/index.html.twig', [
             'page_title' => 'Gallery',

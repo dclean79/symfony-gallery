@@ -16,24 +16,60 @@
     {% if galleries is empty %}
         <div class="alert alert-info">No galleries found yet. Start by clicking "Add Gallery"!</div>
     {% else %}
-        <div class="list-group">
+        {# Główny kontener akordeonu (dla data-bs-parent) #}
+        <div class="accordion" id="accordionGalleries">
             {% for galleryData in galleries %}
-                <div class="list-group-item d-flex justify-content-between align-items-center">
-                    {% set slug = galleryData.slug %}
-                    {% set thumbnail = galleryData.thumbnail %}
 
-                    <strong>{{ slug |capitalize|replace({'-': ' '}) }}</strong>
+                {% set slug = galleryData.slug %}
+                {% set pictures = galleryData.pictures is defined ? galleryData.pictures : [] %} {# Zakładamy, że to jest tablica zdjęć #}
+                {% set collapseId = 'collapse-' ~ slug %}
 
-                    {% if thumbnail %}
-                        <img src="{{ '/uploads/galleries/' ~ slug ~ '/' ~ thumbnail }}"
-                             alt="{{ slug }} Thumbnail"
-                             style="width: 50px; height: 50px; object-fit: cover; margin-right: 15px; border-radius: 5px;">
-                    {% endif %}
-
-                    <a href="{{ path('app_gallery_upload', {'slug': slug }) }}" class="btn btn-sm btn-info" 
-                       style="background-color: #1e758d; border-color: #1e758d; color: white;">
-                        <i class="bi bi-image"></i> Add Pictures
-                    </a>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading-{{ slug }}">
+                        <button class="accordion-button collapsed" type="button" 
+                                data-bs-toggle="collapse" 
+                                data-bs-target="#{{ collapseId }}" 
+                                aria-expanded="false" 
+                                aria-controls="{{ collapseId }}">
+                            {{ slug |capitalize|replace({'-': ' '}) }} ({{ pictures|length }} Pictures)
+                        </button>
+                    </h2>
+                    
+                    <div id="{{ collapseId }}" class="accordion-collapse collapse" 
+                         data-bs-parent="#accordionGalleries">
+                        <div class="accordion-body">
+                            
+                            {# Użycie Bootstrap Grid: 10/12 dla miniaturek, 2/12 dla przycisku #}
+                            <div class="row">
+                                
+                                {# KOLUMNA 10 (Miniaturki Zdjęć) #}
+                                <div class="col-10 d-flex flex-wrap align-items-center">
+                                    {% if pictures is not empty %}
+                                        {% for picture in pictures|slice(0, 5) %} {# Ograniczamy do 5, by nie zaśmiecać widoku #}
+                                            <div style="padding: 5px;">
+                                                <img src="{{ '/uploads/galleries/' ~ slug ~ '/' ~ picture.filename }}" {# Dostosuj ścieżkę do struktury swojego obiektu #}
+                                                    alt="{{ slug }} picture"
+                                                    class="img-thumbnail"
+                                                    style="width: 150px; height: 150px; object-fit: cover;">
+                                            </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <p class="text-muted">No pictures uploaded yet.</p>
+                                    {% endif %}
+                                </div>
+                                
+                                {# KOLUMNA 2 (Przycisk Akcji) #}
+                                <div class="col-2 d-flex justify-content-end align-items-center">
+                                    <a href="{{ path('app_gallery_upload', {'slug': slug }) }}" class="btn btn-sm btn-info text-nowrap" 
+                                    style="background-color: #1e758d; border-color: #1e758d; color: white;">
+                                        <i class="bi bi-image"></i> Add Pictures
+                                    </a>
+                                </div>
+                                
+                            </div> {# Koniec row #}
+                            
+                        </div>
+                    </div>
                 </div>
             {% endfor %}
         </div>
