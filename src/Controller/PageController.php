@@ -12,7 +12,7 @@ class PageController extends AbstractController
     public function about(): Response
     {
         return $this->render('page/about.html.twig', [
-            'page_title' => 'About Us',
+            'page_title' => 'About',
         ]);
     }
 

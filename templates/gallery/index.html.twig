@@ -13,15 +13,14 @@
     
     <h2>Existing Galleries:</h2>
     
-    {% if galleries is empty %}
+   {% if galleries is empty %}
         <div class="alert alert-info">No galleries found yet. Start by clicking "Add Gallery"!</div>
     {% else %}
-        {# Główny kontener akordeonu (dla data-bs-parent) #}
         <div class="accordion" id="accordionGalleries">
             {% for galleryData in galleries %}
 
                 {% set slug = galleryData.slug %}
-                {% set pictures = galleryData.pictures is defined ? galleryData.pictures : [] %} {# Zakładamy, że to jest tablica zdjęć #}
+                {% set pictures = galleryData.pictures is defined ? galleryData.pictures : [] %}
                 {% set collapseId = 'collapse-' ~ slug %}
 
                 <div class="accordion-item">
@@ -35,30 +34,37 @@
                         </button>
                     </h2>
                     
-                    <div id="{{ collapseId }}" class="accordion-collapse collapse" 
-                         data-bs-parent="#accordionGalleries">
+                    <div id="{{ collapseId }}" 
+                         class="accordion-collapse collapse" 
+                         data-bs-parent="#accordionGalleries"
+                         data-gallery-slug="{{ slug }}"
+                         data-gallery-pictures="{{ pictures|json_encode() }}">
+                         
                         <div class="accordion-body">
                             
-                            {# Użycie Bootstrap Grid: 10/12 dla miniaturek, 2/12 dla przycisku #}
                             <div class="row">
-                                
-                                {# KOLUMNA 10 (Miniaturki Zdjęć) #}
+                               
                                 <div class="col-10 d-flex flex-wrap align-items-center">
                                     {% if pictures is not empty %}
-                                        {% for picture in pictures|slice(0, 5) %} {# Ograniczamy do 5, by nie zaśmiecać widoku #}
-                                            <div style="padding: 5px;">
-                                                <img src="{{ '/uploads/galleries/' ~ slug ~ '/' ~ picture.filename }}" {# Dostosuj ścieżkę do struktury swojego obiektu #}
+                                        {% for picture in pictures %}
+                                            <a href="#" 
+                                               class="d-block" 
+                                               data-bs-toggle="modal" 
+                                               data-bs-target="#galleryCarouselModal"
+                                               data-index="{{ loop.index0 }}"  
+                                               style="padding: 5px;">
+                                                
+                                                <img src="{{ '/uploads/galleries/' ~ slug ~ '/' ~ picture.filename }}"
                                                     alt="{{ slug }} picture"
                                                     class="img-thumbnail"
                                                     style="width: 150px; height: 150px; object-fit: cover;">
-                                            </div>
+                                            </a>
                                         {% endfor %}
                                     {% else %}
                                         <p class="text-muted">No pictures uploaded yet.</p>
                                     {% endif %}
                                 </div>
                                 
-                                {# KOLUMNA 2 (Przycisk Akcji) #}
                                 <div class="col-2 d-flex justify-content-end align-items-center">
                                     <a href="{{ path('app_gallery_upload', {'slug': slug }) }}" class="btn btn-sm btn-info text-nowrap" 
                                     style="background-color: #1e758d; border-color: #1e758d; color: white;">
@@ -66,7 +72,7 @@
                                     </a>
                                 </div>
                                 
-                            </div> {# Koniec row #}
+                            </div>
                             
                         </div>
                     </div>
@@ -75,4 +81,81 @@
         </div>
     {% endif %}
 
+    <div class="modal fade" id="galleryCarouselModal" tabindex="-1" aria-labelledby="galleryCarouselModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content bg-dark">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title text-white" id="galleryCarouselModalLabel">Gallery View</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div id="imageCarousel" class="carousel slide" data-bs-ride="false" data-bs-interval="false">
+                        <div class="carousel-inner" id="carousel-inner-content">
+                            {# slides will inject here via JavaScript #}
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const modal = document.getElementById('galleryCarouselModal');
+            const carouselInner = document.getElementById('carousel-inner-content');
+            const imageCarousel = document.getElementById('imageCarousel');
+            
+            modal.addEventListener('show.bs.modal', function (event) {
+                const relatedLink = event.relatedTarget;
+                
+                const accordionContent = relatedLink.closest('.accordion-collapse');
+                
+                if (!accordionContent) {
+                    carouselInner.innerHTML = '<p class="p-4 text-white">Brak danych galerii.</p>';
+                    return;
+                }
+
+                const picturesJson = accordionContent.getAttribute('data-gallery-pictures');
+                const slug = accordionContent.getAttribute('data-gallery-slug');
+                const initialIndex = parseInt(relatedLink.getAttribute('data-index'));
+
+                const pictures = JSON.parse(picturesJson);
+                
+                carouselInner.innerHTML = '';
+
+                pictures.forEach((picture, index) => {
+                    const isActive = index === initialIndex ? 'active' : '';
+                    const imageUrl = `/uploads/galleries/${slug}/${picture.filename}`;
+                    
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = `carousel-item text-center ${isActive}`;
+                    
+                    itemDiv.innerHTML = `
+                        <img src="${imageUrl}" class="d-block w-auto mx-auto" alt="${slug} picture" style="max-height: 80vh;">
+                    `;
+                    
+                    carouselInner.appendChild(itemDiv);
+                });
+
+                const carousel = new bootstrap.Carousel(imageCarousel, {
+                    ride: false,
+                    wrap: true 
+                });
+                
+                carousel.to(initialIndex);
+            });
+        });
+    </script>
 {% endblock %}
